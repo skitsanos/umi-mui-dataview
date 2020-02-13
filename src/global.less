@@ -1,0 +1,40 @@
+@import (css) url('https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400,400i|IBM+Plex+Sans:300,400&display=swap');
+@import (css) 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css';
+
+@font-family: 'IBM Plex Sans', sans-serif;
+@code-family: 'IBM Plex Mono', Menlo, Courier, monospace;
+@margin: 0.3rem;
+@margin-large: 1rem;
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: @font-family;
+}
+
+#root {
+  > div {
+    padding: 2rem;
+
+    .header {
+      background-color: #483D8B;
+      color: #fff;
+      padding: @margin-large;
+      margin-bottom: @margin-large*2;
+
+      .MuiButton-text
+      {
+        color: #fff;
+      }
+    }
+  }
+}
+
+.mr{
+  margin-right: @margin;
+}
+
+@import "components/DataView/DataView";
