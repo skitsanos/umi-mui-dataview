@@ -47,6 +47,7 @@ const DataView = props =>
         ? (params) => dataSource({
             ...params,
             query: query,
+            sort: sort,
             filters: {}
         })
         : ({current, pageSize}) =>
@@ -63,15 +64,23 @@ const DataView = props =>
                     return searchableIndexes.filter(ndx => el[columns[ndx].dataIndex].includes(query.trim())).length > 0;
                 }) : dataSource;
 
+                //check if we have sorting requested and if there is a sorting function available
+                const sortableColumn = sort !== null ? columns.find(el => (typeof el.sort === 'function') && (el.dataIndex === sort?.field)) : null;
+
                 const startFrom = current === 1 ? 0 : (current - 1) * pageSize;
-                const dataPage = searchableData.slice(startFrom, startFrom + pageSize);
+                const dataPage = Boolean(sortableColumn)
+                    ? [...searchableData].sort((...params) => sortableColumn.sort(sort, params)).slice(startFrom, startFrom + pageSize)
+                    : searchableData.slice(startFrom, startFrom + pageSize);
 
                 return new Promise(resolve => resolve({
                     data: dataPage,
                     total: searchableData.length
                 }));
             }
-        }, {paginated: true});
+        }, {
+        paginated: true,
+        refreshDeps: [sort]
+    });
 
     const resetSelectMarkers = (tbody) =>
     {
@@ -88,12 +97,20 @@ const DataView = props =>
 
         resetSelectMarkers(tbody);
 
+        //reset Sorting
+        setSort(null);
+
         refresh();
     };
 
     const doSort = (field, order) =>
     {
-        console.log(field, order, sort?.field);
+        if (order === SortMode.NONE)
+        {
+            setSort(null);
+            return;
+        }
+
         setSort({
             field: field,
             order: order

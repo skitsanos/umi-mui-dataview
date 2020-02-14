@@ -1,5 +1,6 @@
 import DataView from '@/components/DataView';
 import {ViewMode} from '@/components/DataView/DataViewModeSelector';
+import {SortMode} from '@/components/DataView/SortIndicator';
 import Button from '@material-ui/core/Button';
 
 import Chance from 'chance';
@@ -12,7 +13,18 @@ const cols = [
         title: 'id',
         dataIndex: 'id',
         search: true,
-        sort: true
+        sort: ({field, order}, [prev, next]) =>
+        {
+            if (order === SortMode.ASC)
+            {
+                return prev[field].localeCompare(next[field]);
+            }
+
+            if (order === SortMode.DESC)
+            {
+                return next[field].localeCompare(prev[field]);
+            }
+        }
     },
 
     {
@@ -52,7 +64,7 @@ const data = Array(17).fill({}).map(() => ({
 
 export default function ()
 {
-    const [view, setView] = useState('array');
+    const [view, setView] = useState('url');
 
     return (
         <div>
@@ -87,8 +99,10 @@ export default function ()
                       {
                           console.log(params);
 
-                          const {current, pageSize} = params;
-                          return fetch(`https://randomuser.me/api?seed=dataview&results=10&page=${current}&size=${pageSize}`)
+                          const {current, pageSize, sort, filters} = params;
+                          const sorting = sort !== null ? `&sortBy=${sort.field}&sortOrder=${sort.order}` : '';
+
+                          return fetch(`https://randomuser.me/api?seed=dataview&results=10&page=${current}&size=${pageSize}${sorting}`)
                               .then(res => res.json()
                                   .then(r => ({
                                       data: r.results,
