@@ -210,13 +210,13 @@ const DataView = props =>
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center'
-                            }}>{el?.title}{el.sort && el.dataIndex &&
+                            }}>{el?.title}{Boolean(el.sort) && el.dataIndex &&
                             <>
-                                {(!sort || el.dataIndex !== sort?.field) &&
+                                {(!Boolean(sort) || el.dataIndex !== sort?.field) &&
                                 <SortIndicator sort={SortMode.NONE}
                                                onChange={(order) => doSort(el.dataIndex, order)}/>}
 
-                                {sort && el.dataIndex === sort?.field && <SortIndicator order={sort.order}
+                                {Boolean(sort) && el.dataIndex === sort?.field && <SortIndicator order={sort.order}
                                                                                         onChange={(order) => doSort(el.dataIndex, order)}/>}
 
                             </>
