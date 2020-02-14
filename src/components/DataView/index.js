@@ -7,8 +7,8 @@
  * @version 1.0.0
  * @author Skitsanos
  */
-import DataViewModeSelector, {ViewMode} from '@/components/DataView/DataViewModeSelector';
-import SortIndicator, {SortMode} from '@/components/DataView/SortIndicator';
+import DataViewModeSelector, {ViewMode} from './DataViewModeSelector';
+import SortIndicator, {SortMode} from './SortIndicator';
 import {
     IconButton,
     Popover,
