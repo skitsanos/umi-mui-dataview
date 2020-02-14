@@ -30,7 +30,7 @@ const DataView = props =>
     const {
         viewAs = ViewMode.LIST,
         columns = [],
-        dataSource = [],
+        dataSource,
         filter: Filter = null,
         card: Card = null,
         size = 'small',
@@ -41,6 +41,7 @@ const DataView = props =>
 
     const [mode, setMode] = useState(viewAs);
     const [query, setQuery] = useState('');
+    const [filters, setFilters] = useState(null);
     const [sort, setSort] = useState(null);
 
     //filters
@@ -52,7 +53,8 @@ const DataView = props =>
         ? (params) => dataSource({
             ...params,
             query: query,
-            sort: sort,
+            filters: filters,
+            sort: sort
         })
         : ({current, pageSize}) =>
         {
@@ -68,22 +70,29 @@ const DataView = props =>
                     return searchableIndexes.filter(ndx => el[columns[ndx].dataIndex].includes(query.trim())).length > 0;
                 }) : dataSource;
 
+                //apply filters if any
+                const filteredData = filters !== null ? searchableData.filter(row =>
+                {
+                    const conditionMet = Object.keys(filters).filter(key => row[key] === filters[key]);
+                    return conditionMet.length === Object.keys(filters).length;
+                }) : searchableData;
+
                 //check if we have sorting requested and if there is a sorting function available
                 const sortableColumn = sort !== null ? columns.find(el => (typeof el.sort === 'function') && (el.dataIndex === sort?.field)) : null;
 
                 const startFrom = current === 1 ? 0 : (current - 1) * pageSize;
                 const dataPage = Boolean(sortableColumn)
-                    ? [...searchableData].sort((...params) => sortableColumn.sort(sort, params)).slice(startFrom, startFrom + pageSize)
-                    : searchableData.slice(startFrom, startFrom + pageSize);
+                    ? [...filteredData].sort((...params) => sortableColumn.sort(sort, params)).slice(startFrom, startFrom + pageSize)
+                    : filteredData.slice(startFrom, startFrom + pageSize);
 
                 return new Promise(resolve => resolve({
                     data: dataPage,
-                    total: searchableData.length
+                    total: filteredData.length
                 }));
             }
         }, {
         paginated: true,
-        refreshDeps: [sort]
+        refreshDeps: [sort, filters]
     });
 
     const resetSelectMarkers = (tbody) =>
@@ -119,6 +128,11 @@ const DataView = props =>
             field: field,
             order: order
         });
+    };
+
+    const applyFilter = (f) =>
+    {
+        setFilters(f);
     };
 
     const closeFilters = () =>
@@ -179,7 +193,7 @@ const DataView = props =>
                 <Popover anchorEl={anchorEl}
                          open={Boolean(anchorEl)}
                          onClose={closeFilters}>
-                    <Filter close={closeFilters} refresh={refresh}/>
+                    <Filter close={closeFilters} refresh={refresh} applyFilter={applyFilter}/>
                 </Popover>
             </React.Fragment>}
 
@@ -187,8 +201,6 @@ const DataView = props =>
                 <div className={'Divider'}/>
             </>}
         </div>
-
-        Sorting: {sort?.field} {''} {sort?.order}
 
         {mode === ViewMode.LIST && <TableContainer>
             <Table size={size} ref={refTable}>

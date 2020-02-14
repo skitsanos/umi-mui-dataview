@@ -64,7 +64,7 @@ const data = Array(17).fill({}).map(() => ({
 
 export default function ()
 {
-    const [view, setView] = useState('url');
+    const [view, setView] = useState('array');
 
     return (
         <div>
@@ -79,6 +79,23 @@ export default function ()
                       dataSource={data}
                       hover={true}
                       onRowClick={console.log}
+                      filter={({close, applyFilter, refresh}) => <div style={{padding: '2rem'}}>
+                          filter goes here
+                          <Button onClick={() =>
+                          {
+                              applyFilter({
+                                  id: data[0].id
+                                  /*zip: '3404'*/
+                              });
+                              close();
+                          }}>Apply Filter</Button>
+                          <Button onClick={() =>
+                          {
+                              applyFilter(null);
+                              close();
+                          }}>Reset</Button>
+                          <Button onClick={close}>Close</Button>
+                      </div>}
                       card={item => <div style={{
                           width: '200px',
                           height: '200px'
