@@ -111,6 +111,10 @@ export default function ()
                       }}
                       hover={true}
                       onRowClick={console.log}
+                      filter={({close, refresh}) => <div style={{padding: '2rem'}}>
+                          filter goes here
+                          <Button onClick={close}>Close</Button>
+                      </div>}
                       card={item => <div style={{
                           width: '200px',
                           height: '200px'

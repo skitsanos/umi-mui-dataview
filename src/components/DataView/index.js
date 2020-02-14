@@ -11,6 +11,7 @@ import DataViewModeSelector, {ViewMode} from '@/components/DataView/DataViewMode
 import SortIndicator, {SortMode} from '@/components/DataView/SortIndicator';
 import {
     IconButton,
+    Popover,
     Table,
     TableBody,
     TableCell,
@@ -30,6 +31,7 @@ const DataView = props =>
         viewAs = ViewMode.LIST,
         columns = [],
         dataSource = [],
+        filter: Filter = null,
         card: Card = null,
         size = 'small',
         hover = false,
@@ -41,6 +43,9 @@ const DataView = props =>
     const [query, setQuery] = useState('');
     const [sort, setSort] = useState(null);
 
+    //filters
+    const [anchorEl, setAnchorEl] = useState(null);
+
     const refTable = React.createRef();
 
     const {data: ds, loading, pagination, refresh} = useRequest(!Array.isArray(dataSource)
@@ -48,7 +53,6 @@ const DataView = props =>
             ...params,
             query: query,
             sort: sort,
-            filters: {}
         })
         : ({current, pageSize}) =>
         {
@@ -117,6 +121,11 @@ const DataView = props =>
         });
     };
 
+    const closeFilters = () =>
+    {
+        setAnchorEl(null);
+    };
+
     const renderCell = (cell_key, content) => <TableCell key={`cell-${cell_key}`}>{content}</TableCell>;
 
     return <div className={'DataView'}>
@@ -159,6 +168,20 @@ const DataView = props =>
                     <i className={'fas fa-file-csv'}/>
                 </IconButton>
             </Tooltip>
+
+            {Filter && <React.Fragment>
+                <Tooltip title="Filter">
+                    <IconButton onClick={(e) => setAnchorEl(e.target)}>
+                        <i className="fas fa-filter HeaderIcon"/>
+                    </IconButton>
+                </Tooltip>
+
+                <Popover anchorEl={anchorEl}
+                         open={Boolean(anchorEl)}
+                         onClose={closeFilters}>
+                    <Filter close={closeFilters} refresh={refresh}/>
+                </Popover>
+            </React.Fragment>}
 
             {actions.length > 0 && <>
                 <div className={'Divider'}/>
