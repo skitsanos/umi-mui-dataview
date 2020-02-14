@@ -1,7 +1,4 @@
-import {
-    IconButton,
-    Tooltip
-} from '@material-ui/core';
+import {Tooltip} from '@material-ui/core';
 import React, {useState} from 'react';
 
 export const SortMode = {
@@ -13,44 +10,47 @@ export const SortMode = {
 const SortIndicator = props =>
 {
     const {
+        order = SortMode.NONE,
         style,
         className,
-        defaultMode = SortMode.NONE
+        onChange
     } = props;
 
-    const [viewMode, setViewMode] = useState(defaultMode);
+    const [viewMode, setViewMode] = useState(order);
 
     return <>
         <Tooltip title={'Sorting'}>
-            <IconButton className={`SortIndicator ${className}`}
-                        onClick={() =>
-                        {
-                            switch (viewMode)
-                            {
-                                case SortMode.NONE:
-                                    setViewMode(SortMode.ASC);
-                                    break;
+            <div className={`SortIndicator MuiButtonBase-root ${className || ''}`}
+                 onClick={() =>
+                 {
+                     setViewMode(prev =>
+                     {
+                         switch (prev)
+                         {
+                             case SortMode.NONE:
+                                 onChange(SortMode.ASC);
+                                 return SortMode.ASC;
 
-                                case SortMode.ASC:
-                                    setViewMode(SortMode.DESC);
-                                    break;
+                             case SortMode.ASC:
+                                 onChange(SortMode.DESC);
+                                 return SortMode.DESC;
 
-                                case SortMode.DESC:
-                                    setViewMode(SortMode.NONE);
-                                    break;
+                             case SortMode.DESC:
+                                 onChange(SortMode.NONE);
+                                 return SortMode.NONE;
 
-                                default:
-                                    break;
-                            }
-                        }}
-                        style={{
-                            ...style,
-                            height: '32px'
-                        }}>
+                             default:
+                                 return SortMode.NONE;
+                         }
+                     });
+                 }}
+                 style={{
+                     ...style
+                 }}>
                 {viewMode === SortMode.NONE && <i className={'fas fa-sort'}/>}
-                {viewMode === SortMode.ASC && <i className={'fas fa-sort-up'}/>}
-                {viewMode === SortMode.DESC && <i className={'fas fa-sort-down'}/>}
-            </IconButton>
+                {viewMode === SortMode.ASC && <i className={'fas fa-sort-up SortIndicator-selected'}/>}
+                {viewMode === SortMode.DESC && <i className={'fas fa-sort-down SortIndicator-selected'}/>}
+            </div>
         </Tooltip>
     </>;
 };

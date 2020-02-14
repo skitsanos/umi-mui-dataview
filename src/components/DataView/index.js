@@ -8,7 +8,7 @@
  * @author Skitsanos
  */
 import DataViewModeSelector, {ViewMode} from '@/components/DataView/DataViewModeSelector';
-import SortIndicator from '@/components/DataView/SortIndicator';
+import SortIndicator, {SortMode} from '@/components/DataView/SortIndicator';
 import {
     IconButton,
     Table,
@@ -16,8 +16,8 @@ import {
     TableCell,
     TableContainer,
     TableHead,
-    TableRow,
     TablePagination,
+    TableRow,
     TextField,
     Tooltip
 } from '@material-ui/core';
@@ -39,6 +39,7 @@ const DataView = props =>
 
     const [mode, setMode] = useState(viewAs);
     const [query, setQuery] = useState('');
+    const [sort, setSort] = useState(null);
 
     const refTable = React.createRef();
 
@@ -90,6 +91,15 @@ const DataView = props =>
         refresh();
     };
 
+    const doSort = (field, order) =>
+    {
+        console.log(field, order, sort?.field);
+        setSort({
+            field: field,
+            order: order
+        });
+    };
+
     const renderCell = (cell_key, content) => <TableCell key={`cell-${cell_key}`}>{content}</TableCell>;
 
     return <div className={'DataView'}>
@@ -127,26 +137,38 @@ const DataView = props =>
                 </IconButton>
             </Tooltip>
 
-            <Tooltip title={'Exort to CSV'}>
+            <Tooltip title={'Export to CSV'}>
                 <IconButton>
                     <i className={'fas fa-file-csv'}/>
                 </IconButton>
             </Tooltip>
-
-            <SortIndicator/>
 
             {actions.length > 0 && <>
                 <div className={'Divider'}/>
             </>}
         </div>
 
+        Sorting: {sort?.field} {''} {sort?.order}
+
         {mode === ViewMode.LIST && <TableContainer>
             <Table size={size} ref={refTable}>
                 <TableHead>
                     <TableRow>
                         {columns?.map((el, el_key) => <TableCell key={`column-${el.dataIndex || el_key}`}>
-                            {el?.title}
-                            {el.sort && <SortIndicator/>}
+                            <div style={{
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}>{el?.title}{el.sort && el.dataIndex &&
+                            <>
+                                {(!sort || el.dataIndex !== sort?.field) &&
+                                <SortIndicator sort={SortMode.NONE}
+                                               onChange={(order) => doSort(el.dataIndex, order)}/>}
+
+                                {sort && el.dataIndex === sort?.field && <SortIndicator order={sort.order}
+                                                                                        onChange={(order) => doSort(el.dataIndex, order)}/>}
+
+                            </>
+                            }</div>
                         </TableCell>)}
                     </TableRow>
                 </TableHead>

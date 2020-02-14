@@ -41,8 +41,10 @@
 
     padding-left: 1rem;
 
-    .MuiIconButton-root {
-      font-size: 80%;
+    .MuiIconButton-root{
+      font-size: 0.9rem !important;
+      width: 38px;
+      height: 38px;
     }
 
     .MuiIconButton-root:hover {
@@ -51,25 +53,28 @@
   }
 
   .DataView-Row-Selected,
-  .DataView-Row-Selected:hover
-  {
+  .DataView-Row-Selected:hover {
     background-color: #6495ED !important;
 
-    td{
+    td {
       color: #fff !important;
       //font-weight: bold;
     }
 
-    >td:nth-of-type(1)
-    {
+    > td:nth-of-type(1) {
       //border-radius: 10px;
     }
   }
 }
 
-.SortIndicator{
-  i{
-    font-size: 80%;
+.SortIndicator {
+  padding: 0.3rem;
+  margin-left: 0.3rem !important;
+  align-items: center;
+
+  .SortIndicator-selected
+  {
+    color: #6495ED;
   }
 }
 

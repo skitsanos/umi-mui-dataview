@@ -23,7 +23,8 @@ const cols = [
 
     {
         title: 'Birthday',
-        dataIndex: 'birthday'
+        dataIndex: 'birthday',
+        sort: true
     },
 
     {
@@ -34,6 +35,7 @@ const cols = [
 
     {
         title: 'Actions',
+        sort: true,
         render: ({row, refresh}) =>
         {
             return <Button onClick={refresh}>refresh</Button>;
@@ -50,7 +52,7 @@ const data = Array(17).fill({}).map(() => ({
 
 export default function ()
 {
-    const [view, setView] = useState('url');
+    const [view, setView] = useState('array');
 
     return (
         <div>
