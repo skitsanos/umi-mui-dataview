@@ -13,6 +13,7 @@ const cols = [
         title: 'id',
         dataIndex: 'id',
         search: true,
+        export: true,
         sort: ({field, order}, [prev, next]) =>
         {
             if (order === SortMode.ASC)
@@ -31,6 +32,7 @@ const cols = [
         title: 'Username',
         sort: true,
         search: true,
+        export: true,
         render: ({row}) => row.login?.username
     },
 
@@ -60,8 +62,7 @@ const colsUrl = [
     {
         title: 'Email',
         dataIndex: 'email',
-        export: true,
-        exportAs: 'User email'
+        export: true
     },
 
     {
@@ -79,6 +80,15 @@ const colsUrl = [
     {
         title: 'Gender',
         dataIndex: 'gender'
+    },
+
+    {
+        title: 'Age',
+        dataIndex: 'dob',
+        export: true,
+        exportKey: 'Age',
+        exportAs: (value) => value.age,
+        render: ({value}) => value.age
     }
 ];
 
@@ -101,7 +111,7 @@ export default function ()
             </div>
 
             {view === 'array' &&
-            <DataView viewAs={ViewMode.LIST}
+            <DataView viewAs={ViewMode.TABLE}
                       columns={cols}
                       dataSource={data}
                       hover={true}
@@ -137,7 +147,7 @@ export default function ()
             }
 
             {view === 'url' &&
-            <DataView viewAs={ViewMode.LIST}
+            <DataView viewAs={ViewMode.TABLE}
                       columns={colsUrl}
                       dataSource={params =>
                       {
@@ -162,6 +172,7 @@ export default function ()
                           }}>Only Females</Button>
                           <Button onClick={close}>Close</Button>
                       </div>}
+                      listItem={item => <div>{item.login.username}</div>}
                       card={item => <div style={{
                           width: '200px',
                           height: '200px'
@@ -180,7 +191,10 @@ export default function ()
                                   padding: '0.3rem'
                               }}>
                                   <div>{item.name.first} {item.name.last}</div>
-                                  <div style={{fontSize: '85%', color: 'gray'}}>@{item.login.username}</div>
+                                  <div style={{
+                                      fontSize: '85%',
+                                      color: 'gray'
+                                  }}>@{item.login.username}</div>
                               </div>
                           </div>
 

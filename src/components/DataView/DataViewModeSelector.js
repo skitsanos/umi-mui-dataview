@@ -6,7 +6,8 @@ import React, {useState} from 'react';
 
 export const ViewMode = {
     CARDS: 'cards',
-    LIST: 'list'
+    LIST: 'list',
+    TABLE: 'table'
 };
 
 const DataViewModeSelector = props =>
@@ -14,15 +15,35 @@ const DataViewModeSelector = props =>
     const {
         style,
         className,
-        defaultMode,
+        defaultMode = ViewMode.TABLE,
         modeChanged,
         tooltipViewAsCard = 'View as cards',
-        tooltipViewAsTable = 'View as table'} = props;
+        tooltipViewAsList = 'View as list',
+        tooltipViewAsTable = 'View as table'
+    } = props;
 
     const [viewMode, setViewMode] = useState(defaultMode);
 
     return <>
         <Tooltip title={tooltipViewAsTable}>
+            <IconButton disableRipple style={style} className={viewMode === 'table'
+                ? `ViewModeSelector-selected ${className}`
+                : className}
+                        onClick={() =>
+                        {
+                            setViewMode(ViewMode.TABLE);
+
+                            if (Object.prototype.hasOwnProperty.call(props, 'modeChanged'))
+                            {
+                                modeChanged(ViewMode.TABLE);
+                            }
+                        }}
+                        aria-label={tooltipViewAsTable}>
+                <i className="fas fa-table"/>
+            </IconButton>
+        </Tooltip>
+
+        <Tooltip title={tooltipViewAsList}>
             <IconButton disableRipple style={style} className={viewMode === 'list'
                 ? `ViewModeSelector-selected ${className}`
                 : className}
@@ -35,7 +56,7 @@ const DataViewModeSelector = props =>
                                 modeChanged(ViewMode.LIST);
                             }
                         }}
-                        aria-label={tooltipViewAsTable}>
+                        aria-label={tooltipViewAsList}>
                 <i className="fas fa-th-list"/>
             </IconButton>
         </Tooltip>

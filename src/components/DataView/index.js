@@ -21,20 +21,21 @@ import {
     Tooltip
 } from '@material-ui/core';
 import {useRequest} from '@umijs/hooks';
+
+import {CsvBuilder} from 'filefy';
 import React, {useState} from 'react';
 import DataViewModeSelector, {ViewMode} from './DataViewModeSelector';
 import SortIndicator, {SortMode} from './SortIndicator';
 
-import {CsvBuilder} from 'filefy';
-
 const DataView = props =>
 {
     const {
-        viewAs = ViewMode.LIST,
+        viewAs = ViewMode.TABLE,
         columns = [],
         dataSource,
         filter: Filter = null,
         card: Card = null,
+        listItem: DataViewListItem = null,
         size = 'small',
         hover = false,
         onRowClick,
@@ -102,16 +103,46 @@ const DataView = props =>
     const getFlatData = () =>
     {
         const columnsToExport = columns.filter(col => Boolean(col.export));
+        const columnIds = columnsToExport.map(col => col.dataIndex);
 
-        const el = refTable.current;
-        const tableRows = document.evaluate('//tbody/tr', el, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+        const exportableCell = (key, data) =>
+        {
+            switch (true)
+            {
+                case (typeof data === 'string'):
+                case (typeof data === 'number'):
+                    return data;
 
-        const tableRowsArray = Array(tableRows.snapshotLength).fill(0).map((element, index) => tableRows.snapshotItem(index));
-        const tableData = tableRowsArray.map(row => [...row.cells].map(cell => cell.innerText));
+                case (typeof data === 'boolean'):
+                    return data ? 'yes' : 'no';
+
+                case (typeof data === 'object'):
+                case (Array.isArray(data)):
+                    const col = columnsToExport.find(el => el.dataIndex === key);
+                    if (col && Object.prototype.hasOwnProperty.call(col, 'exportAs'))
+                    {
+                        return col.exportAs(data);
+                    }
+                    return '#ERR [OBJECT]';
+
+                default:
+                    return '#ERR';
+            }
+        };
+
+        const tableData = ds.data.map(row =>
+        {
+            const entries = Object.entries(row).filter(([key]) => columnIds.includes(key));
+            entries.sort((a, b) =>
+            {
+                return columnIds.indexOf(a[0]) - columnIds.indexOf(b[0]);
+            });
+            return entries.map(([key, value]) => exportableCell(key, value));
+        });
 
         return [
-            columnsToExport.map(col => col.exportAs || col.dataIndex),
-            ...tableData.map(row => row.filter((cell, cell_index) => columnsToExport.map(c => c.dataIndex).includes(columns[cell_index].dataIndex)))
+            columnsToExport.map(col => col.exportKey || col.dataIndex),
+            ...tableData
         ];
     };
 
@@ -181,7 +212,7 @@ const DataView = props =>
                            }}/>
             </div>
 
-            <DataViewModeSelector modeChanged={setMode}/>
+            <DataViewModeSelector defaultMode={mode} modeChanged={setMode}/>
         </div>
 
         <div className={'ActionsBar'}>
@@ -231,7 +262,7 @@ const DataView = props =>
             </>}
         </div>
 
-        {mode === ViewMode.LIST && <TableContainer>
+        {mode === ViewMode.TABLE && <TableContainer>
             <Table size={size} ref={refTable}>
                 <TableHead>
                     <TableRow>
@@ -326,6 +357,10 @@ const DataView = props =>
         {mode === ViewMode.CARDS && <div className={'DataView-Cards'}>
             {ds?.data.map((row, row_key) => <div key={`card-${row_key}`} className={'DataView-Card'}><Card {...row}/>
             </div>)}
+        </div>}
+
+        {mode === ViewMode.LIST && <div className={'DataView-List'}>
+            {ds?.data.map((row, row_key) => <DataViewListItem key={row_key} {...row}/>)}
         </div>}
 
         <TablePagination component={'div'}
