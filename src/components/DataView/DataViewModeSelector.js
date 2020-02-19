@@ -11,7 +11,13 @@ export const ViewMode = {
 
 const DataViewModeSelector = props =>
 {
-    const {style, className, viewAsList, viewAsCards, defaultMode, tooltipViewAsCard = 'View as cards', tooltipViewAsTable = 'View as table'} = props;
+    const {
+        style,
+        className,
+        defaultMode,
+        modeChanged,
+        tooltipViewAsCard = 'View as cards',
+        tooltipViewAsTable = 'View as table'} = props;
 
     const [viewMode, setViewMode] = useState(defaultMode);
 
@@ -24,9 +30,9 @@ const DataViewModeSelector = props =>
                         {
                             setViewMode(ViewMode.LIST);
 
-                            if (Object.prototype.hasOwnProperty.call(props, 'viewAsList'))
+                            if (Object.prototype.hasOwnProperty.call(props, 'modeChanged'))
                             {
-                                viewAsList(ViewMode.LIST);
+                                modeChanged(ViewMode.LIST);
                             }
                         }}
                         aria-label={tooltipViewAsTable}>
@@ -42,9 +48,9 @@ const DataViewModeSelector = props =>
                         {
                             setViewMode(ViewMode.CARDS);
 
-                            if (Object.prototype.hasOwnProperty.call(props, 'viewAsCards'))
+                            if (Object.prototype.hasOwnProperty.call(props, 'modeChanged'))
                             {
-                                viewAsCards(ViewMode.CARDS);
+                                modeChanged(ViewMode.CARDS);
                             }
                         }}
                         aria-label={tooltipViewAsCard}>

@@ -56,6 +56,32 @@ const cols = [
     }
 ];
 
+const colsUrl = [
+    {
+        title: 'Email',
+        dataIndex: 'email',
+        export: true,
+        exportAs: 'User email'
+    },
+
+    {
+        title: 'Registered',
+        render: ({row}) => row.registered.date
+    },
+
+    {
+        title: 'Name',
+        dataIndex: 'name',
+        export: true,
+        render: ({value}) => <>{value.first} {value.last}</>
+    },
+
+    {
+        title: 'Gender',
+        dataIndex: 'gender'
+    }
+];
+
 const data = Array(17).fill({}).map(() => ({
     id: rnd.cf(),
     username: rnd.email(),
@@ -112,7 +138,7 @@ export default function ()
 
             {view === 'url' &&
             <DataView viewAs={ViewMode.LIST}
-                      columns={cols}
+                      columns={colsUrl}
                       dataSource={params =>
                       {
                           console.log(params);
@@ -129,17 +155,33 @@ export default function ()
                       }}
                       hover={true}
                       onRowClick={console.log}
-                      filter={({close, refresh}) => <div style={{padding: '2rem'}}>
-                          filter goes here
+                      filter={({close, applyFilter}) => <div style={{padding: '2rem'}}>
+                          <Button onClick={() =>
+                          {
+                              applyFilter({gender: 'female'});
+                          }}>Only Females</Button>
                           <Button onClick={close}>Close</Button>
                       </div>}
                       card={item => <div style={{
                           width: '200px',
                           height: '200px'
                       }}>
-                          <div style={{padding: '0.3rem'}}>{item.username}</div>
-                          <div>
-                              <img onClick={() => console.log(item)} src={item.image} alt={item.username}/>
+                          <div style={{
+                              display: 'flex',
+                              alignItems: 'center'
+                          }}>
+                              <img onClick={() => console.log(item)}
+                                   src={item.picture.thumbnail}
+                                   alt={item.login.username}
+                                   style={{borderRadius: '50%'}}/>
+                              <div style={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  padding: '0.3rem'
+                              }}>
+                                  <div>{item.name.first} {item.name.last}</div>
+                                  <div style={{fontSize: '85%', color: 'gray'}}>@{item.login.username}</div>
+                              </div>
                           </div>
 
                           <div>{item.birthday}</div>

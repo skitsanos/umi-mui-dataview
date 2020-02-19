@@ -4,11 +4,9 @@
  * While Table view displays information in a way that’s easy to scan, so that users can look for patterns and insights.
  * Cards view adds more visualization to data available for rendering.
  *
- * @version 1.0.0
+ * @version 1.2.20200219
  * @author Skitsanos
  */
-import DataViewModeSelector, {ViewMode} from './DataViewModeSelector';
-import SortIndicator, {SortMode} from './SortIndicator';
 import {
     IconButton,
     Popover,
@@ -24,6 +22,10 @@ import {
 } from '@material-ui/core';
 import {useRequest} from '@umijs/hooks';
 import React, {useState} from 'react';
+import DataViewModeSelector, {ViewMode} from './DataViewModeSelector';
+import SortIndicator, {SortMode} from './SortIndicator';
+
+import {CsvBuilder} from 'filefy';
 
 const DataView = props =>
 {
@@ -36,6 +38,8 @@ const DataView = props =>
         size = 'small',
         hover = false,
         onRowClick,
+        exportFileName = 'untitled.csv',
+        exportDelimiter = ',',
         actions = []
     } = props;
 
@@ -94,6 +98,22 @@ const DataView = props =>
         paginated: true,
         refreshDeps: [sort, filters]
     });
+
+    const getFlatData = () =>
+    {
+        const columnsToExport = columns.filter(col => Boolean(col.export));
+
+        const el = refTable.current;
+        const tableRows = document.evaluate('//tbody/tr', el, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+
+        const tableRowsArray = Array(tableRows.snapshotLength).fill(0).map((element, index) => tableRows.snapshotItem(index));
+        const tableData = tableRowsArray.map(row => [...row.cells].map(cell => cell.innerText));
+
+        return [
+            columnsToExport.map(col => col.exportAs || col.dataIndex),
+            ...tableData.map(row => row.filter((cell, cell_index) => columnsToExport.map(c => c.dataIndex).includes(columns[cell_index].dataIndex)))
+        ];
+    };
 
     const resetSelectMarkers = (tbody) =>
     {
@@ -161,7 +181,7 @@ const DataView = props =>
                            }}/>
             </div>
 
-            <DataViewModeSelector viewAsCards={setMode} viewAsList={setMode}/>
+            <DataViewModeSelector modeChanged={setMode}/>
         </div>
 
         <div className={'ActionsBar'}>
@@ -178,7 +198,16 @@ const DataView = props =>
             </Tooltip>
 
             <Tooltip title={'Export to CSV'}>
-                <IconButton>
+                <IconButton onClick={() =>
+                {
+                    const payload = getFlatData();
+
+                    const builder = new CsvBuilder(exportFileName);
+                    builder
+                        .setDelimeter(exportDelimiter)
+                        .addRows(payload)
+                        .exportFile();
+                }}>
                     <i className={'fas fa-file-csv'}/>
                 </IconButton>
             </Tooltip>
@@ -217,7 +246,7 @@ const DataView = props =>
                                                onChange={(order) => doSort(el.dataIndex, order)}/>}
 
                                 {Boolean(sort) && el.dataIndex === sort?.field && <SortIndicator order={sort.order}
-                                                                                        onChange={(order) => doSort(el.dataIndex, order)}/>}
+                                                                                                 onChange={(order) => doSort(el.dataIndex, order)}/>}
 
                             </>
                             }</div>
