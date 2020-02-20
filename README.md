@@ -117,7 +117,7 @@ const data = Array(17).fill(0).map(() => ({
 
 Printing support implemented via [PrintJs](https://printjs.crabbly.com/) library. Once print button clicked in action bar, data page will be passed to PrintJs and your operating system's print dialog will appear.
 
-##### Example below defines print template t 
+##### Example below defines template to be used for printing
 
 ```jsx
 <DataView printTemplate={({d}) => <div>
