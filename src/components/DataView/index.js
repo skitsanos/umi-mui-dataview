@@ -268,9 +268,9 @@ const DataView = props =>
                 {
                     const payload = getFlatData();
 
-                    const builder = new CsvBuilder(options.exportFileName);
+                    const builder = new CsvBuilder(options.exportFileName||'untitled.csv');
                     builder
-                        .setDelimeter(options.exportDelimiter)
+                        .setDelimeter(options.exportDelimiter||',')
                         .addRows(payload)
                         .exportFile();
                 }}>
