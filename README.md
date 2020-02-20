@@ -8,12 +8,24 @@ The idea behind this component is to allow user maximum flexibility in rendering
 ### Features supported
 
 * Feeding data from array or URL
+
 * Data Pagination
+
 * Data Filtering
+
 * Column sorting
+
 * Column rendering
+
 * CSV file export
+
 * Printing
+
+  
+
+---
+
+
 
 ### Properties
 
