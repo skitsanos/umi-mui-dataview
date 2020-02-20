@@ -8,7 +8,7 @@ export default {
       antd: false,
       dva: false,
       dynamicImport: false,
-      title: 'umi-static',
+      title: 'umi-mui-dataview',
       dll: false,
 
       routes: {
