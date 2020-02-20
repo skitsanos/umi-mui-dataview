@@ -149,6 +149,7 @@ export default function ()
 
             {view === 'url' &&
             <DataView viewAs={ViewMode.TABLE}
+                      size={'medium'}
 
                       options={{filter:true}}
 

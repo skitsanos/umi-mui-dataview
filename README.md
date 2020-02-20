@@ -1,102 +1,78 @@
 # umi-mui-dataview
-Blank template to create React applications with [UmiJs](https://umijs.org) with minimal effort. 
+> This component is based on UmiJs hooks and Material-UI functionality and built on top of [umi-app-template](https://github.com/skitsanos/umi-app-template) 
 
-### Why UmiJS
 
-UmiJs is pluggable enterprise-level react application framework.
 
-The entire lifecycle of umi is composed of plugins. Features such as pwa, on-demand loading, one-click switching preact, one-button compatibility ie9, etc., are all implemented by plugins.
+The idea behind this component is to allow user maximum flexibility in rendering very same data in three different ways: as Table, as List and as Cards with minimal effort.
 
-You only need an umi dependency to start development without having to install react, preact, webpack, react-router, babel, jest, and more.
+### Features supported
 
-Next.js like and full featured routing conventions, support permissions, dynamic routing, nested routing, and more.
+* Feeding data from array or URL
+* Data Pagination
+* Data Filtering
+* Column sorting
+* Column rendering
+* CSV file export
+* Printing
 
-Umi is the basic front-end framework of [Ant Financial](https://www.antfin.com/), and has served 600+ applications directly or indirectly, including Java, node, mobile apps, Hybrid apps, pure front-end assets apps, CMS apps, and more. umi has served our internal users very well and we hope that it can also serve external users well.
+### Properties
 
-### Why not next.js?
+Below is the list of properties and configuration options 
 
-The routing of next.js is relatively simple. For example, its routing configuration does not support some advanced usages such as layout, nested routing, permission routing, etc., which are common in enterprise applications. Compared to next.js, umi is more like nuxt.js at the functional level of contracted routing.
+| Property      | Default        | Description                           |
+| ------------- | -------------- | ------------------------------------- |
+| viewAs        | ViewMode.TABLE | Sets view mode (list, table or cards) |
+| size          | small          |                                       |
+| columns       | []             | Data columns definition               |
+| dataSource    | null           |                                       |
+| options       |                |                                       |
+| actions       | []             |                                       |
+| hover         | false          |                                       |
+| onRowClick    |                |                                       |
+| filter        | null           |                                       |
+| printTemplate | null           |                                       |
+| listItem      | null           |                                       |
+| card          | null           |                                       |
 
-### Installing
+#### View Mode
 
-Make sure, first, that you have Node.js installed
+Allows to set initial view mode from one of the following
 
-```sh
-$node --version
-v13.7.0
-```
+| Value          | Description                                                  |
+| -------------- | ------------------------------------------------------------ |
+| ViewMode.TABLE | Displays data in table mode                                  |
+| ViewMode.LIST  | Displays data in list mode. Requires setting listItem property. |
+| ViewMode.CARDS | Displays data in cards mode. Requires setting card property. |
 
-Then install umi globally. We recommend to use `yarn` to manage npm dependencies.
-
-```sh
-$yarn global add umi
-```
-
-Now, you can clone umi-app-template code base:
-
-```sh
-$git clone https://github.com/skitsanos/umi-app-template.git
-```
-
-Get inside into downloaded folder
-
-```sh
-$cd /umi-app-template
-```
-
-Inside you will have the following folder structure
-
-```
-/mock
-/src
-.env
-.eslintrc
-.umirc.js
-package.json
-README.md
-webpack.config.js
-```
-
-And, then
-
-```sh
-$yarn
-```
-
-Once all dependencies are installed, you can test your installation by launching your app:
-
-```sh
-$umi dev
-```
-
-This command will build your react application and make it available to be accessible from the web browser. It will let you know how to access it:
-
-```
-  App running at:
-  - Local:   http://localhost:8000/ (copied to clipboard)
-  - Network: http://192.168.100.2:8000/
-```
-
-### Creating the new page
-
-There are two ways of creating a page, or by adding new javascript file into /pages folder directly, let's say _about.js_:
+##### Table view example
 
 ```jsx
-export default () => <div>content of the page</div>;
+<DataView viewAs={ViewMode.TABLE}/>
 ```
 
-Once you saved it, you can type in your browser
+When working with CARDS and LIST modes and setting templates for rendering data, there will an item argument sent to your component that will contain very same data that data row has in TABLE mode.
 
-Another method would be by typing
+##### List view example
 
-```sh
-$umi g page about
+```jsx
+<DataView viewAs={ViewMode.LIST} listItem={item => <div>{item.login.username}</div>}/>
 ```
 
-Result would be the same. In both cases you would have a page created and already _visible_ to Umi.
+##### Cards view example
 
-```
-http://localhost:8000/about
+```jsx
+<DataView viewAs={ViewMode.CARDS} card={item => <div>{item.login.username}</div>}/>
 ```
 
-and you will see you content of your page.
+#### Size
+
+Allows table cells to inherit size of the Table, same way as defined in MUI [Table](https://material-ui.com/api/table/)
+
+* small
+* medium
+
+#### Data source
+
+* Array
+* URL
+
