@@ -189,7 +189,7 @@ export default function ()
                           <Button onClick={close}>Close</Button>
                       </div>}
 
-                      printTemplate={({d}) => <div>
+                      printTemplate={({data:d}) => <div>
                           {d?.data && d?.data.map((el, el_key) => <div key={el_key}>
                               <div style={{marginBottom: '1ch'}}>
                                   {el.login.username}
