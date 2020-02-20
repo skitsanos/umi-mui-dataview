@@ -145,14 +145,15 @@ const data = Array(17).fill(0).map(() => ({
 
 `TABLE` view mode requires you to have columns defined in order to display your data. Column definition has the following properties:
 
-| Property  | Type                | Description                                                  |
-| --------- | ------------------- | ------------------------------------------------------------ |
-| dataIndex | String              | column data index                                            |
-| title     | String              | Column title                                                 |
-| render    | Function            | table cell rendering handler                                 |
-| export    | Boolean or Function | Signals that this column is to export                        |
-| exportKey | string              | CSV column/header name. If not defined `dataIndex` will be used |
-| exportAs  | Function            | Cell rendering handler that used during the export           |
+| Property  | Type     | Description                                                  |
+| --------- | -------- | ------------------------------------------------------------ |
+| dataIndex | String   | column data index                                            |
+| title     | String   | Column title                                                 |
+| render    | Function | Table cell rendering handler                                 |
+| sort      | Boolean  | Column sorting handler                                       |
+| export    | Boolean  | Signals that this column is to export                        |
+| exportKey | string   | CSV column/header name. If not defined `dataIndex` will be used |
+| exportAs  | Function | Cell rendering handler that used during the export           |
 
 ##### Few notes on how data is rendered
 
@@ -270,6 +271,23 @@ Why not to have one render method for all?
 It would work pretty fine with one method in situations when you render your cells as simple textual content, but once you start putting there React components, - for the app it works just fine, but in CSV it all goes nuclear and instead having your data you will have `[object] ` rendered into your cells. Especially when you have cells rendered via `<Trans/>` components from [react-i18next](https://react.i18next.com/).
 
 So to save the situation, you can use `render` to render your cell data on screen and `exportAs` to render data in CSV.
+
+##### Sorting
+
+When it comes to sorting, it depends on what is your data source, if it is an `Array`, column sorting will be applied directly to your data source, while on `URL` data sorting criteria will passed to you to handle on server.
+
+Making column sortable
+
+```jsx
+const cols = [
+     {
+        title: 'Email',
+        dataIndex: 'email',
+        sort: true,
+        export: true
+    },
+]
+```
 
 
 

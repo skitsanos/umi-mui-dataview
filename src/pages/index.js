@@ -160,8 +160,6 @@ export default function ()
                           const {current, pageSize, sort, filters} = params;
                           const sorting = sort !== null ? `&sortBy=${sort.field}&sortOrder=${sort.order}` : '';
 
-                          console.log(filters)
-
                           return fetch(`https://randomuser.me/api?seed=dataview&results=10&page=${current}&size=${pageSize}${sorting}`)
                               .then(res => res.json()
                                   .then(r => ({
