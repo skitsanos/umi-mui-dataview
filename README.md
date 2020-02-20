@@ -34,6 +34,12 @@ Below is the list of properties and configuration options
 | listItem      | null           | Component template to render data when in `LIST` view mode. |
 | card          | null           | Component template to render data when in `CARD` view mode. |
 
+
+
+---
+
+
+
 #### View Mode
 
 Allows to set initial view mode from one of the following
@@ -64,6 +70,12 @@ When working with CARDS and LIST modes and setting templates for rendering data,
 <DataView viewAs={ViewMode.CARDS} card={item => <div>{item.login.username}</div>}/>
 ```
 
+
+
+---
+
+
+
 #### Size
 
 For `TABLE` view mode only. Allows table cells to inherit size of the Table, same way as defined in MUI [Table](https://material-ui.com/api/table/)
@@ -76,6 +88,12 @@ For `TABLE` view mode only. Allows table cells to inherit size of the Table, sam
 ```jsx
 <DataView size={'small'}/>
 ```
+
+
+
+---
+
+
 
 #### Data source
 
@@ -116,6 +134,12 @@ const data = Array(17).fill(0).map(() => ({
                                   })));
                       }}/>
 ```
+
+
+
+---
+
+
 
 #### Columns
 
@@ -222,7 +246,36 @@ const cols = [
 
 ##### Exporting data
 
-DataView component allows data snapshot exporting into CSV file.
+DataView component allows data snapshot exporting into CSV file. When _Export to CSV_ action clicked, DataView component will look into all columns that have `export` field on it. 
+
+The same as with `render` column property described earlier, for complex fields like arrays and objects, we have rendering handler `exportAs` that passes you sole argument.
+
+```js
+const cols = [
+     {
+        title: 'Age',
+        dataIndex: 'dob',
+        export: true,
+        exportKey: 'Age',
+        exportAs: (value) => value.age,
+        render: ({value}) => value.age
+    }
+]
+```
+
+Example above allows rendering of `age` data from the `dob` field in table view and in CSV both.
+
+Why not to have one render method for all?
+
+It would work pretty fine with one method in situations when you render your cells as simple textual content, but once you start putting there React components, - for the app it works just fine, but in CSV it all goes nuclear and instead having your data you will have `[object] ` rendered into your cells. Especially when you have cells rendered via `<Trans/>` components from [react-i18next](https://react.i18next.com/).
+
+So to save the situation, you can use `render` to render your cell data on screen and `exportAs` to render data in CSV.
+
+
+
+---
+
+
 
 #### Rows hover and click feedback
 
@@ -258,6 +311,12 @@ The following example will print `onRowClick` arguments into console:
 <DataView onRowClick={console.log}/>
 ```
 
+
+
+---
+
+
+
 #### Data filtering
 
 In order to implement data filtering you need to provide a component that implements your filter UI into `filter` property. 
@@ -289,6 +348,14 @@ Handler is the function and it passes two arguments `close` and `applyFilter`:
 | ----------- | ------------------------------------------------------------ |
 | close       | Allows to close filter pop-up component.                     |
 | applyFilter | Applies filter by passing an object with key/value pars as filtering criteria |
+
+Now, depends on your data source type (`Array` or `URL`) it will handle filtering differently. While on `Array` kind of data source it filters data by applying filter directly to entire data set, on `URL` kind of data set, DataView will pass filters to you so you can handle it on server side.
+
+
+
+---
+
+
 
 #### Printing
 
