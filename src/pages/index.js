@@ -62,6 +62,7 @@ const colsUrl = [
     {
         title: 'Email',
         dataIndex: 'email',
+        sort: true,
         export: true
     },
 
@@ -148,13 +149,19 @@ export default function ()
 
             {view === 'url' &&
             <DataView viewAs={ViewMode.TABLE}
+
+                      options={{filter:true}}
+
                       columns={colsUrl}
+
                       dataSource={params =>
                       {
                           console.log(params);
 
                           const {current, pageSize, sort, filters} = params;
                           const sorting = sort !== null ? `&sortBy=${sort.field}&sortOrder=${sort.order}` : '';
+
+                          console.log(filters)
 
                           return fetch(`https://randomuser.me/api?seed=dataview&results=10&page=${current}&size=${pageSize}${sorting}`)
                               .then(res => res.json()
@@ -163,8 +170,18 @@ export default function ()
                                       total: 55
                                   })));
                       }}
+
                       hover={true}
+
+                      actions={[
+                          (p)=><div key={'test'} onClick={()=>{
+                              console.log(p)
+                          }}>zzz</div>,
+                          <div key={'test1'}>aaa</div>
+                      ]}
+
                       onRowClick={console.log}
+
                       filter={({close, applyFilter}) => <div style={{padding: '2rem'}}>
                           <Button onClick={() =>
                           {
@@ -172,7 +189,17 @@ export default function ()
                           }}>Only Females</Button>
                           <Button onClick={close}>Close</Button>
                       </div>}
+
+                      printTemplate={({d}) => <div>
+                          {d?.data && d?.data.map((el, el_key) => <div key={el_key}>
+                              <div style={{marginBottom: '1ch'}}>
+                                  {el.login.username}
+                              </div>
+                          </div>)}
+                      </div>}
+
                       listItem={item => <div>{item.login.username}</div>}
+
                       card={item => <div style={{
                           width: '200px',
                           height: '200px'

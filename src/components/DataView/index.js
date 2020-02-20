@@ -4,10 +4,11 @@
  * While Table view displays information in a way that’s easy to scan, so that users can look for patterns and insights.
  * Cards view adds more visualization to data available for rendering.
  *
- * @version 1.2.20200219
+ * @version 1.3.20200220
  * @author Skitsanos
  */
 import {
+    CircularProgress,
     IconButton,
     Popover,
     Table,
@@ -23,12 +24,26 @@ import {
 import {useRequest} from '@umijs/hooks';
 
 import {CsvBuilder} from 'filefy';
+
+import printJS from 'print-js';
 import React, {useState} from 'react';
 import DataViewModeSelector, {ViewMode} from './DataViewModeSelector';
 import SortIndicator, {SortMode} from './SortIndicator';
 
+const localUuid = () =>
+{
+    let dt = new Date().getTime();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) =>
+    {
+        var r = (dt + Math.random() * 16) % 16 | 0;
+        dt = Math.floor(dt / 16);
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+};
+
 const DataView = props =>
 {
+    const printId = localUuid();
     const {
         viewAs = ViewMode.TABLE,
         columns = [],
@@ -36,12 +51,18 @@ const DataView = props =>
         filter: Filter = null,
         card: Card = null,
         listItem: DataViewListItem = null,
+        printTemplate: PrintTemplate = null,
         size = 'small',
         hover = false,
         onRowClick,
-        exportFileName = 'untitled.csv',
-        exportDelimiter = ',',
-        actions = []
+        actions = [],
+        options = {
+            printing: false,
+            filter: false,
+            export: false,
+            exportFileName: 'untitled.csv',
+            exportDelimiter: ','
+        }
     } = props;
 
     const [mode, setMode] = useState(viewAs);
@@ -222,28 +243,42 @@ const DataView = props =>
                 </IconButton>
             </Tooltip>
 
-            <Tooltip title={'Print'}>
-                <IconButton>
+            {options.printing && <Tooltip title={'Print'}>
+                <IconButton onClick={() =>
+                {
+                    const style = window.getComputedStyle(document.getElementById(printId));
+                    //console.log(style.cssText);
+
+                    printJS({
+                        type: 'html',
+                        printable: printId,
+                        css: [
+                            'https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400,400i|IBM+Plex+Sans:300,400&display=swap'
+                        ],
+                        targetStyles: '*',
+                        style: style.cssText
+                    });
+                }}>
                     <i className={'fas fa-print'}/>
                 </IconButton>
-            </Tooltip>
+            </Tooltip>}
 
-            <Tooltip title={'Export to CSV'}>
+            {options.export && <Tooltip title={'Export to CSV'}>
                 <IconButton onClick={() =>
                 {
                     const payload = getFlatData();
 
-                    const builder = new CsvBuilder(exportFileName);
+                    const builder = new CsvBuilder(options.exportFileName);
                     builder
-                        .setDelimeter(exportDelimiter)
+                        .setDelimeter(options.exportDelimiter)
                         .addRows(payload)
                         .exportFile();
                 }}>
                     <i className={'fas fa-file-csv'}/>
                 </IconButton>
-            </Tooltip>
+            </Tooltip>}
 
-            {Filter && <React.Fragment>
+            {options.filter && Filter && <React.Fragment>
                 <Tooltip title="Filter">
                     <IconButton onClick={(e) => setAnchorEl(e.target)}>
                         <i className="fas fa-filter HeaderIcon"/>
@@ -259,10 +294,25 @@ const DataView = props =>
 
             {actions.length > 0 && <>
                 <div className={'Divider'}/>
+
+                {actions.map((el) => typeof el === 'function' ? el({
+                    refresh: refresh,
+                    loading: loading,
+                    dataSource: ds,
+                    pagination: pagination
+                }) : el)}
             </>}
         </div>
 
-        {mode === ViewMode.TABLE && <TableContainer>
+        {loading && <div style={{
+            height: '100px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center'
+        }}><CircularProgress/></div>}
+
+        {!loading && mode === ViewMode.TABLE && <TableContainer>
             <Table size={size} ref={refTable}>
                 <TableHead>
                     <TableRow>
@@ -354,12 +404,12 @@ const DataView = props =>
             </Table>
         </TableContainer>}
 
-        {mode === ViewMode.CARDS && <div className={'DataView-Cards'}>
+        {!loading && mode === ViewMode.CARDS && <div className={'DataView-Cards'}>
             {ds?.data.map((row, row_key) => <div key={`card-${row_key}`} className={'DataView-Card'}><Card {...row}/>
             </div>)}
         </div>}
 
-        {mode === ViewMode.LIST && <div className={'DataView-List'}>
+        {!loading && mode === ViewMode.LIST && <div className={'DataView-List'}>
             {ds?.data.map((row, row_key) => <DataViewListItem key={row_key} {...row}/>)}
         </div>}
 
@@ -375,6 +425,12 @@ const DataView = props =>
                          {
                              pagination.changeCurrent(p + 1);
                          }}/>
+
+        <div style={{display: 'none'}}>
+            <div id={printId} className={'DataView-Printable-Page'}>
+                {PrintTemplate !== null && <PrintTemplate data={ds}/>}
+            </div>
+        </div>
     </div>;
 };
 
