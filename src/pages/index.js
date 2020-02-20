@@ -93,7 +93,7 @@ const colsUrl = [
     }
 ];
 
-const data = Array(17).fill({}).map(() => ({
+const data = Array(17).fill(0).map(() => ({
     id: rnd.cf(),
     username: rnd.email(),
     birthday: rnd.birthday({string: true}),
@@ -150,8 +150,6 @@ export default function ()
             {view === 'url' &&
             <DataView viewAs={ViewMode.TABLE}
                       size={'medium'}
-
-                      options={{filter:true}}
 
                       columns={colsUrl}
 

@@ -57,9 +57,9 @@ const DataView = props =>
         onRowClick,
         actions = [],
         options = {
-            printing: false,
-            filter: false,
-            export: false,
+            printing: true,
+            filter: true,
+            export: true,
             exportFileName: 'untitled.csv',
             exportDelimiter: ','
         }
