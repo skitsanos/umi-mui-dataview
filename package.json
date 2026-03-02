@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.11.0",
-    "eslint": "^6.8.0",
+    "eslint": "^10.0.0",
     "eslint-config-umi": "^1.6.0",
     "eslint-plugin-flowtype": "^2.50.0",
     "eslint-plugin-import": "^2.14.0",
