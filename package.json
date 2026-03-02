@@ -13,7 +13,7 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "@material-ui/core": "^4.9.2",
+    "@mui/material": "^5.0.0",
     "@umijs/hooks": "^1.6.0",
     "chance": "^1.1.4",
     "filefy": "^0.1.10",
