@@ -22,7 +22,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.11.0",
+    "@babel/eslint-parser": "^8.0.0",
     "eslint": "^10.0.0",
     "eslint-config-umi": "^1.6.0",
     "eslint-plugin-flowtype": "^8.0.0",
